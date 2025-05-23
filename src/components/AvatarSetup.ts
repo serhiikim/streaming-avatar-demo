@@ -76,7 +76,7 @@ export class AvatarSetup {
       </div>
 
       <div class="form-actions">
-        <button type="submit" id="startSession" class="primary" disabled>Start Session</button>
+        <button type="button" id="startSession" class="primary" disabled>Start Session</button>
       </div>
     `;
 
@@ -88,7 +88,7 @@ export class AvatarSetup {
 
     // Add event listeners
     this.form.addEventListener('input', this.validateForm.bind(this));
-    this.form.addEventListener('submit', this.handleSubmit.bind(this));
+    this.startButton.addEventListener('click', this.handleSubmit.bind(this));
   }
 
   private validateForm() {
