@@ -34,7 +34,7 @@ async function fetchAccessToken(): Promise<string> {
 }
 
 // Initialize streaming avatar session
-async function initializeAvatarSession(assistant: OpenAIAssistant) {
+async function initializeAvatarSession(assistant: OpenAIAssistant, openingIntro: string) {
   try {
     const token = await fetchAccessToken();
     avatar = new StreamingAvatar({ token });
@@ -57,9 +57,8 @@ async function initializeAvatarSession(assistant: OpenAIAssistant) {
     openaiAssistant = assistant;
 
     // Get and speak the intro message
-    const introMessage = await assistant.getResponse("Please introduce yourself according to the opening introduction.");
     await avatar.speak({
-      text: introMessage,
+      text: openingIntro,
       taskType: TaskType.REPEAT,
     });
 
@@ -120,11 +119,17 @@ async function handleSpeak() {
 // Initialize the application
 function initializeApp() {
   // Create avatar setup
-  new AvatarSetup({
-    onSetupComplete: async (assistant) => {
-      await initializeAvatarSession(assistant);
+  const setup = new AvatarSetup({
+    onSetupComplete: async (assistant, openingIntro) => {
+      await initializeAvatarSession(assistant, openingIntro);
     }
   });
+
+  // Get the main container and insert setup form before it
+  const mainContainer = document.querySelector('.container');
+  if (mainContainer && mainContainer.parentNode) {
+    mainContainer.parentNode.insertBefore(setup.form, mainContainer);
+  }
 
   // Add event listeners
   endButton.addEventListener("click", terminateAvatarSession);

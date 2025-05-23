@@ -1,7 +1,7 @@
 import { OpenAIAssistant } from "../openai-assistant";
 
 interface AvatarSetupProps {
-  onSetupComplete: (assistant: OpenAIAssistant) => void;
+  onSetupComplete: (assistant: OpenAIAssistant, openingIntro: string) => void;
 }
 
 interface SetupFormData {
@@ -15,9 +15,9 @@ interface SetupFormData {
 }
 
 export class AvatarSetup {
-  private form!: HTMLFormElement;
+  public form!: HTMLFormElement;
   private startButton!: HTMLButtonElement;
-  private setupCompleteCallback: (assistant: OpenAIAssistant) => void;
+  private setupCompleteCallback: (assistant: OpenAIAssistant, openingIntro: string) => void;
 
   constructor(props: AvatarSetupProps) {
     this.setupCompleteCallback = props.onSetupComplete;
@@ -124,7 +124,7 @@ export class AvatarSetup {
       const assistant = await this.updateAssistant(instructions, formData.actions);
       
       // Call the completion callback
-      this.setupCompleteCallback(assistant);
+      this.setupCompleteCallback(assistant, formData.openingIntro);
       
       // Remove the form
       this.form.remove();
@@ -151,28 +151,79 @@ export class AvatarSetup {
           content: 'You are an expert at creating OpenAI Assistant instructions.'
         }, {
           role: 'user',
-          content: `Create optimized instructions for an OpenAI Assistant based on:
-            Opening Intro: ${formData.openingIntro}
+          content: `Create comprehensive instructions for an OpenAI Assistant based on:
             Full Prompt: ${formData.fullPrompt}
             Available Actions: ${Object.entries(formData.actions)
               .filter(([_, enabled]) => enabled)
               .map(([action]) => action)
               .join(', ')}
             
-            Important instructions for function calling:
-            1. When a user requests any of the available actions, you MUST call the corresponding function
-            2. For call_human: Use when user asks to speak with a human or needs human assistance
-            3. For schedule_meeting: Use when user wants to schedule any type of meeting
-            4. For show_slide: Use when user asks about specific information that might be in slides
-            
-            Function calling process:
-            1. First, acknowledge the user's request
-            2. Then, immediately call the appropriate function with relevant parameters
-            3. After the function call, explain what action was taken
-            4. If the function requires additional information, ask the user for it
-            
-            Remember: Always use functions when appropriate - don't just explain that you could do something, actually do it by calling the function.`
-        }]
+            CRITICAL FUNCTION CALLING INSTRUCTIONS:
+    You MUST call functions when users request the corresponding actions. Never just explain what you could do - actually perform the action by calling the function.
+    
+    1. CALL_HUMAN Function:
+       - Trigger: When user asks to speak with a human, needs human assistance, or requests escalation
+       - Examples: "I need to talk to someone", "Can I speak with a human?", "This is too complex"
+       - Process: Acknowledge → Call function → Confirm action taken
+    
+    2. SCHEDULE_MEETING Function:
+       - Trigger: When user wants to schedule any type of meeting, call, or appointment
+       - Examples: "Can we schedule a demo?", "I'd like to book a meeting", "When can we talk?"
+       - Process: Acknowledge → Call function → Ask for any missing details
+    
+    3. SHOW_SLIDE Function - DETAILED INSTRUCTIONS:
+       - Trigger: When user asks about specific topics, features, pricing, or information that might be covered in presentation slides
+       - Examples: "Tell me about your pricing", "How does the automation work?", "Show me customer success stories"
+       
+       SLIDE SEARCH PROCESS:
+       a) Use file_search to find relevant slides based on user's question
+       b) Look for slides matching these criteria:
+          - Keywords that match the user's query
+          - Content that addresses their specific question
+          - Related topics that might be relevant
+       
+       SLIDE JSON STRUCTURE CONTEXT:
+       The slides are stored in JSON format with this structure:
+       - slide_id: Unique identifier (e.g., "slide_001")
+       - title: Slide title
+       - type: Slide category (e.g., "pricing", "feature_detail", "case_study")
+       - content: Detailed slide content and data
+       - description: What the slide is about
+       - keywords: Search terms for finding relevant slides
+       - context: When to use this slide
+       - related_topics: Connected subjects
+       
+       SHOW_SLIDE EXECUTION:
+       1. Search for relevant slides using file_search
+       2. Identify the most appropriate slide(s) based on user query
+       3. Call show_slide function with:
+          - slide_id: The exact slide ID from JSON
+          - context_summary: Brief summary of slide content relevant to user's question
+       4. Provide a conversational explanation of the slide content
+       5. Offer to show related slides or answer follow-up questions
+       
+       SLIDE MATCHING EXAMPLES:
+       - User asks "What are your prices?" → Look for slides with type "pricing" or keywords ["pricing", "cost", "plans"]
+       - User asks "How does automation work?" → Find slides with keywords ["automation", "workflow", "process"]
+       - User asks "Do you have customer examples?" → Search for type "case_study" or keywords ["success stories", "customers"]
+       - User asks "What integrations do you support?" → Look for keywords ["integration", "API", "connectivity"]
+    
+    FUNCTION CALLING BEST PRACTICES:
+    1. Always acknowledge the user's request first
+    2. Immediately call the appropriate function - don't hesitate
+    3. Use natural language to explain what you're doing
+    4. If multiple slides are relevant, show the most specific one first
+    5. After showing a slide, offer related information or next steps
+    6. If you can't find relevant information, still call the function and explain the search attempt
+    
+    RESPONSE FLOW EXAMPLE:
+    User: "Can you show me your pricing options?"
+    Assistant: "I'd be happy to show you our pricing information. Let me find the relevant details for you."
+    [Calls show_slide function with pricing slide]
+    Assistant: "Here's our pricing structure with three main plans... [explains content] Would you like me to show you more details about any specific plan or discuss implementation?"
+    
+    Remember: The goal is to be helpful and proactive. When in doubt, use the functions to provide the best possible assistance to users.`
+}]
       })
     });
 
