@@ -39,6 +39,7 @@ See `.env.example` for all required environment variables:
 
 - `VITE_OPENAI_API_KEY`: Your OpenAI API key
 - `VITE_OPENAI_ASSISTANT_ID`: Your OpenAI Assistant ID
+- `VITE_OPENAI_MODEL`: Your OpenAI Model
 - `VITE_HEYGEN_API_KEY`: Your HeyGen API key for avatar streaming
 
 ## Function Calling
@@ -59,18 +60,6 @@ The demo includes three example functions that the AI assistant can call:
 
 All function calls are currently logged to the console for demonstration purposes.
 
-## Project Structure
-
-```
-src/
-├── components/
-│   ├── AvatarSetup.ts    # Avatar configuration component
-│   └── Avatar.ts         # Avatar display component
-├── config/
-│   └── webhook.ts        # Function calling implementation
-├── openai-assistant.ts   # OpenAI Assistant integration
-└── main.ts              # Application entry point
-```
 
 ## Data Resources
 

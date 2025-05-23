@@ -145,7 +145,7 @@ export class AvatarSetup {
         'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: import.meta.env.VITE_OPENAI_MODEL,
         messages: [{
           role: 'system',
           content: 'You are an expert at creating OpenAI Assistant instructions.'
