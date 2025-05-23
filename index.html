@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/vite.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <title>Interactive Avatar Demo</title>
+  </head>
+
+  <body>
+    <div class="container">
+      <header>
+        <h1>Interactive Avatar Demo</h1>
+        <p class="subtitle">Experience real-time AI interaction with a virtual avatar</p>
+      </header>
+
+      <main>
+        <!-- Avatar Video Section -->
+        <section class="avatar-container">
+          <video id="avatarVideo" autoplay playsinline></video>
+        </section>
+
+        <!-- Controls Section -->
+        <section class="controls-container">
+          <!-- Session Controls -->
+          <div class="controls-group">
+            <button id="startSession" class="primary">Start Session</button>
+            <button id="endSession" class="danger" disabled>End Session</button>
+          </div>
+
+          <!-- Chat Controls -->
+          <div class="controls-group">
+            <input
+              type="text"
+              id="userInput"
+              placeholder="Type your message here..."
+              aria-label="Message input"
+            />
+            <button id="speakButton" class="success">Send</button>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <p>Built with OpenAI Assistant API and HeyGen Streaming Avatar</p>
+      </footer>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
