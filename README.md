@@ -81,10 +81,18 @@ The project includes a sample presentation data file (`product_demo_presentation
 - Rich semantic information for each slide
 - Keywords and related topics for better search relevance
 
-You can use this file as seed data for your assistant's knowledge base by:
-1. Converting it to vector embeddings
-2. Storing it in a vector database
-3. Enabling the assistant to search through this content when users ask about the product
+You can use this file as seed data for your assistant's knowledge base in two ways:
+
+1. **Using OpenAI Playground (Recommended)**:
+   - Create a new assistant in OpenAI Playground
+   - Create a new vector store and upload the JSON file
+   - Assign the vector store to your assistant
+   - The assistant will automatically use this knowledge for relevant queries
+
+2. **Manual Implementation**:
+   - Convert the data to vector embeddings
+   - Store it in a vector database
+   - Enable the assistant to search through this content when users ask about the product
 
 ## Development
 
