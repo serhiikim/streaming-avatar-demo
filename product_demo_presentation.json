@@ -1,0 +1,511 @@
+{
+  "presentation": {
+    "title": "Product Demo Presentation",
+    "description": "Complete product overview and feature demonstration",
+    "created_date": "2025-05-23",
+    "total_slides": 15
+  },
+  "slides": [
+    {
+      "slide_id": "slide_001",
+      "slide_number": 1,
+      "title": "Welcome to Our Platform",
+      "type": "title_slide",
+      "content": {
+        "main_title": "Revolutionary Business Solution",
+        "subtitle": "Streamline Your Workflow with AI-Powered Tools",
+        "presenter": "Sales Team"
+      },
+      "description": "Opening slide introducing our platform. Sets the tone for the presentation and welcomes prospects.",
+      "keywords": ["welcome", "introduction", "platform", "business solution"],
+      "context": "Use when starting a demo or introducing the company to new prospects",
+      "related_topics": ["company overview", "platform introduction"]
+    },
+    {
+      "slide_id": "slide_002", 
+      "slide_number": 2,
+      "title": "The Problem We Solve",
+      "type": "problem_statement",
+      "content": {
+        "main_points": [
+          "Manual processes waste 40% of productive time",
+          "Data silos prevent informed decision making", 
+          "Lack of automation leads to human errors",
+          "Scaling operations becomes increasingly difficult"
+        ],
+        "statistics": {
+          "time_wasted": "40%",
+          "error_rate": "15%",
+          "cost_increase": "25% annually"
+        }
+      },
+      "description": "Identifies key pain points that our target customers face in their daily operations. Includes compelling statistics.",
+      "keywords": ["problem", "pain points", "manual processes", "inefficiency", "errors"],
+      "context": "Present early in demo to establish need and create urgency",
+      "related_topics": ["business challenges", "current state analysis", "pain points"]
+    },
+    {
+      "slide_id": "slide_003",
+      "slide_number": 3, 
+      "title": "Our Solution Overview",
+      "type": "solution_overview",
+      "content": {
+        "solution_pillars": [
+          {
+            "name": "Automation Engine",
+            "description": "Automate repetitive tasks and workflows"
+          },
+          {
+            "name": "Unified Dashboard", 
+            "description": "Single source of truth for all your data"
+          },
+          {
+            "name": "AI Analytics",
+            "description": "Smart insights and predictive analytics"
+          },
+          {
+            "name": "Integration Hub",
+            "description": "Connect with your existing tools seamlessly"
+          }
+        ]
+      },
+      "description": "High-level overview of our solution's core components and how they address the problems mentioned earlier.",
+      "keywords": ["solution", "automation", "dashboard", "AI", "analytics", "integration"],
+      "context": "Follow problem slide to show how we solve their challenges",
+      "related_topics": ["product overview", "core features", "solution architecture"]
+    },
+    {
+      "slide_id": "slide_004",
+      "slide_number": 4,
+      "title": "Automation Engine Deep Dive",
+      "type": "feature_detail",
+      "content": {
+        "feature_name": "Automation Engine",
+        "benefits": [
+          "Reduce manual work by 80%",
+          "24/7 automated processing",
+          "Custom workflow builder",
+          "Error-free execution"
+        ],
+        "demo_points": [
+          "Drag-and-drop workflow designer",
+          "Pre-built templates for common processes",
+          "Real-time monitoring and alerts",
+          "Integration with popular business tools"
+        ],
+        "use_cases": [
+          "Invoice processing and approval",
+          "Customer onboarding workflows", 
+          "Report generation and distribution",
+          "Data synchronization between systems"
+        ]
+      },
+      "description": "Detailed explanation of the automation capabilities, including specific benefits and real-world use cases.",
+      "keywords": ["automation", "workflow", "efficiency", "templates", "drag-and-drop"],
+      "context": "Use when prospects ask about automation capabilities or workflow management",
+      "related_topics": ["workflow automation", "process optimization", "efficiency gains"]
+    },
+    {
+      "slide_id": "slide_005",
+      "slide_number": 5,
+      "title": "AI Analytics Dashboard",
+      "type": "feature_detail",
+      "content": {
+        "feature_name": "AI Analytics Dashboard",
+        "capabilities": [
+          "Real-time data visualization",
+          "Predictive analytics and forecasting",
+          "Anomaly detection and alerts",
+          "Custom report generation"
+        ],
+        "dashboard_sections": [
+          {
+            "name": "Performance Metrics",
+            "description": "KPIs and business health indicators"
+          },
+          {
+            "name": "Trend Analysis", 
+            "description": "Historical data patterns and projections"
+          },
+          {
+            "name": "Alert Center",
+            "description": "Real-time notifications and recommendations"
+          }
+        ]
+      },
+      "description": "Comprehensive overview of the analytics dashboard, highlighting AI-powered insights and visualization capabilities.",
+      "keywords": ["analytics", "dashboard", "AI", "visualization", "insights", "predictions"],
+      "context": "Present when discussing data analysis needs or reporting requirements",
+      "related_topics": ["business intelligence", "data visualization", "predictive analytics"]
+    },
+    {
+      "slide_id": "slide_006",
+      "slide_number": 6,
+      "title": "Integration Capabilities", 
+      "type": "technical_overview",
+      "content": {
+        "supported_integrations": [
+          {
+            "category": "CRM Systems",
+            "tools": ["Salesforce", "HubSpot", "Pipedrive", "Zoho CRM"]
+          },
+          {
+            "category": "Communication",
+            "tools": ["Slack", "Microsoft Teams", "Email platforms"]
+          },
+          {
+            "category": "File Storage", 
+            "tools": ["Google Drive", "Dropbox", "OneDrive", "SharePoint"]
+          },
+          {
+            "category": "Accounting",
+            "tools": ["QuickBooks", "Xero", "SAP", "Oracle"]
+          }
+        ],
+        "integration_methods": [
+          "REST APIs",
+          "Webhooks", 
+          "Direct database connections",
+          "File-based imports/exports"
+        ]
+      },
+      "description": "Technical slide showing all supported integrations and connection methods available to customers.",
+      "keywords": ["integrations", "API", "CRM", "tools", "connectivity", "compatibility"],
+      "context": "Use when prospects ask about compatibility with existing systems",
+      "related_topics": ["system integration", "API connectivity", "data migration"]
+    },
+    {
+      "slide_id": "slide_007",
+      "slide_number": 7,
+      "title": "Customer Success Stories",
+      "type": "case_study",
+      "content": {
+        "case_studies": [
+          {
+            "company": "TechCorp Inc.",
+            "industry": "Technology",
+            "challenge": "Manual invoice processing taking 5 hours daily",
+            "solution": "Automated invoice workflow with AI validation",
+            "results": {
+              "time_saved": "90%",
+              "error_reduction": "95%",
+              "cost_savings": "$50,000 annually"
+            }
+          },
+          {
+            "company": "RetailMax",
+            "industry": "E-commerce", 
+            "challenge": "Scattered data across 12 different systems",
+            "solution": "Unified dashboard with real-time integration",
+            "results": {
+              "decision_speed": "3x faster",
+              "data_accuracy": "99.5%",
+              "revenue_increase": "25%"
+            }
+          }
+        ]
+      },
+      "description": "Real customer success stories with specific metrics and outcomes to build credibility and demonstrate value.",
+      "keywords": ["success stories", "case studies", "ROI", "results", "customers"],
+      "context": "Use to build credibility and show proven results to skeptical prospects",
+      "related_topics": ["customer testimonials", "ROI examples", "proof of concept"]
+    },
+    {
+      "slide_id": "slide_008",
+      "slide_number": 8,
+      "title": "Pricing & Plans",
+      "type": "pricing",
+      "content": {
+        "plans": [
+          {
+            "name": "Starter",
+            "price": "$99/month",
+            "features": [
+              "Up to 5 users",
+              "Basic automation workflows",
+              "Standard dashboard",
+              "Email support"
+            ],
+            "ideal_for": "Small teams getting started"
+          },
+          {
+            "name": "Professional", 
+            "price": "$299/month",
+            "features": [
+              "Up to 25 users",
+              "Advanced automation",
+              "AI analytics dashboard",
+              "Priority support",
+              "API access"
+            ],
+            "ideal_for": "Growing businesses",
+            "most_popular": true
+          },
+          {
+            "name": "Enterprise",
+            "price": "Custom pricing",
+            "features": [
+              "Unlimited users",
+              "Custom integrations",
+              "Dedicated success manager",
+              "24/7 phone support",
+              "On-premise deployment option"
+            ],
+            "ideal_for": "Large organizations"
+          }
+        ]
+      },
+      "description": "Pricing information for different plan tiers, highlighting features and target customer segments.",
+      "keywords": ["pricing", "plans", "cost", "features", "subscription"],
+      "context": "Present when prospects are ready to discuss investment and implementation",
+      "related_topics": ["pricing structure", "plan comparison", "cost analysis"]
+    },
+    {
+      "slide_id": "slide_009",
+      "slide_number": 9,
+      "title": "Implementation Timeline",
+      "type": "process_overview",
+      "content": {
+        "phases": [
+          {
+            "phase": "Discovery & Planning",
+            "duration": "Week 1-2",
+            "activities": [
+              "Requirements gathering",
+              "System assessment", 
+              "Implementation plan creation"
+            ]
+          },
+          {
+            "phase": "Setup & Configuration",
+            "duration": "Week 3-4", 
+            "activities": [
+              "Platform configuration",
+              "Integration setup",
+              "Initial data migration"
+            ]
+          },
+          {
+            "phase": "Training & Testing",
+            "duration": "Week 5-6",
+            "activities": [
+              "User training sessions",
+              "System testing",
+              "Workflow optimization"
+            ]
+          },
+          {
+            "phase": "Go-Live & Support",
+            "duration": "Week 7+",
+            "activities": [
+              "Production deployment",
+              "Ongoing support",
+              "Performance monitoring"
+            ]
+          }
+        ]
+      },
+      "description": "Step-by-step implementation timeline showing what customers can expect during onboarding process.",
+      "keywords": ["implementation", "timeline", "onboarding", "setup", "training"],
+      "context": "Address concerns about implementation complexity and time investment",
+      "related_topics": ["onboarding process", "project timeline", "implementation support"]
+    },
+    {
+      "slide_id": "slide_010",
+      "slide_number": 10,
+      "title": "Security & Compliance",
+      "type": "technical_assurance",
+      "content": {
+        "security_features": [
+          "End-to-end encryption",
+          "Multi-factor authentication",
+          "Role-based access control",
+          "Regular security audits",
+          "Data backup and recovery"
+        ],
+        "compliance_standards": [
+          "SOC 2 Type II certified",
+          "GDPR compliant",
+          "HIPAA ready",
+          "ISO 27001 certified"
+        ],
+        "data_protection": {
+          "encryption": "AES-256",
+          "storage": "Encrypted at rest and in transit",
+          "access_logs": "Complete audit trail",
+          "retention": "Configurable data retention policies"
+        }
+      },
+      "description": "Security and compliance information to address enterprise concerns about data protection and regulatory requirements.",
+      "keywords": ["security", "compliance", "encryption", "GDPR", "SOC2", "data protection"],
+      "context": "Essential for enterprise prospects and regulated industries",
+      "related_topics": ["data security", "compliance requirements", "enterprise security"]
+    },
+    {
+      "slide_id": "slide_011",
+      "slide_number": 11,
+      "title": "Support & Training Resources",
+      "type": "support_overview",
+      "content": {
+        "support_channels": [
+          {
+            "channel": "24/7 Help Desk",
+            "description": "Round-the-clock technical support",
+            "availability": "Enterprise plans"
+          },
+          {
+            "channel": "Live Chat",
+            "description": "Real-time assistance during business hours",
+            "availability": "All plans"
+          },
+          {
+            "channel": "Knowledge Base",
+            "description": "Comprehensive documentation and tutorials",
+            "availability": "All plans"
+          }
+        ],
+        "training_options": [
+          "Interactive video tutorials",
+          "Live webinar sessions",
+          "On-site training (Enterprise)",
+          "Certification programs"
+        ]
+      },
+      "description": "Overview of available support channels and training resources to ensure customer success.",
+      "keywords": ["support", "training", "help desk", "resources", "documentation"],
+      "context": "Address concerns about learning curve and ongoing support needs",
+      "related_topics": ["customer support", "training programs", "user resources"]
+    },
+    {
+      "slide_id": "slide_012",
+      "slide_number": 12,
+      "title": "ROI Calculator",
+      "type": "roi_analysis",
+      "content": {
+        "calculation_factors": [
+          {
+            "factor": "Time Savings",
+            "current_cost": "$2000/month in manual work",
+            "with_solution": "$200/month",
+            "savings": "$1800/month"
+          },
+          {
+            "factor": "Error Reduction", 
+            "current_cost": "$500/month in corrections",
+            "with_solution": "$50/month",
+            "savings": "$450/month"
+          },
+          {
+            "factor": "Efficiency Gains",
+            "current_cost": "20% slower processes",
+            "with_solution": "50% faster execution", 
+            "savings": "$800/month value"
+          }
+        ],
+        "summary": {
+          "total_monthly_savings": "$3050",
+          "annual_savings": "$36,600",
+          "solution_cost": "$299/month",
+          "net_annual_roi": "1127%",
+          "payback_period": "3 weeks"
+        }
+      },
+      "description": "Interactive ROI calculator showing potential cost savings and return on investment for typical customer scenarios.",
+      "keywords": ["ROI", "savings", "cost analysis", "payback", "efficiency"],
+      "context": "Use when discussing budget justification and financial benefits",
+      "related_topics": ["cost benefit analysis", "financial justification", "investment return"]
+    },
+    {
+      "slide_id": "slide_013",
+      "slide_number": 13,
+      "title": "Frequently Asked Questions",
+      "type": "faq",
+      "content": {
+        "questions": [
+          {
+            "question": "How long does implementation take?",
+            "answer": "Typical implementation takes 6-8 weeks from kickoff to full deployment, depending on complexity and integrations required."
+          },
+          {
+            "question": "Can we integrate with our existing CRM?",
+            "answer": "Yes, we support 50+ popular business tools including Salesforce, HubSpot, and custom API integrations."
+          },
+          {
+            "question": "What happens to our data if we cancel?",
+            "answer": "You retain full ownership of your data and can export everything in standard formats. We provide 90 days for data retrieval."
+          },
+          {
+            "question": "Do you offer training for our team?",
+            "answer": "Yes, we provide comprehensive training including video tutorials, live sessions, and on-site training for Enterprise customers."
+          }
+        ]
+      },
+      "description": "Common questions and answers to address typical prospect concerns and objections during sales conversations.",
+      "keywords": ["FAQ", "questions", "concerns", "objections", "answers"],
+      "context": "Use to proactively address common concerns or when prospects raise specific questions",
+      "related_topics": ["common concerns", "objection handling", "prospect questions"]
+    },
+    {
+      "slide_id": "slide_014",
+      "slide_number": 14,
+      "title": "Next Steps",
+      "type": "call_to_action",
+      "content": {
+        "immediate_actions": [
+          {
+            "action": "Schedule Demo",
+            "description": "Book a personalized demo tailored to your specific needs",
+            "duration": "30 minutes"
+          },
+          {
+            "action": "Free Trial",
+            "description": "Start with a 14-day free trial, no credit card required",
+            "access": "Immediate"
+          },
+          {
+            "action": "Consultation Call",
+            "description": "Speak with our solution expert about your requirements",
+            "duration": "45 minutes"
+          }
+        ],
+        "contact_info": {
+          "sales_email": "sales@company.com",
+          "phone": "+1-555-0123",
+          "calendar_link": "https://calendly.com/sales-team"
+        }
+      },
+      "description": "Clear next steps and calls-to-action to move prospects forward in the sales process.",
+      "keywords": ["next steps", "demo", "trial", "consultation", "contact"],
+      "context": "End every presentation with clear options for prospect engagement",
+      "related_topics": ["call to action", "next steps", "contact information"]
+    },
+    {
+      "slide_id": "slide_015",
+      "slide_number": 15,
+      "title": "Thank You & Questions",
+      "type": "closing",
+      "content": {
+        "closing_message": "Thank you for your time and attention. We're excited about the possibility of helping transform your business operations.",
+        "contact_reminder": {
+          "primary_contact": "John Smith, Senior Sales Executive",
+          "email": "john.smith@company.com", 
+          "phone": "+1-555-0123",
+          "linkedin": "linkedin.com/in/johnsmith"
+        },
+        "follow_up_promise": "I'll send you a summary of today's discussion and the resources we mentioned within 24 hours."
+      },
+      "description": "Professional closing slide with contact information and commitment to follow-up communication.",
+      "keywords": ["thank you", "questions", "contact", "follow-up"],
+      "context": "Always end presentations professionally with clear follow-up commitment",
+      "related_topics": ["presentation closing", "contact details", "follow-up process"]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "last_updated": "2025-05-23",
+    "tags": ["product demo", "sales presentation", "feature overview"],
+    "target_audience": ["prospects", "potential customers", "decision makers"],
+    "presentation_length": "45-60 minutes",
+    "usage_notes": "Customize slides based on prospect's industry and specific needs. Skip technical slides for executive audiences."
+  }
+}

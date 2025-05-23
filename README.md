@@ -72,6 +72,20 @@ src/
 └── main.ts              # Application entry point
 ```
 
+## Data Resources
+
+The project includes a sample presentation data file (`product_demo_presentation.json`) that can be used as reference data for the OpenAI Assistant's vector search capabilities. This JSON file contains:
+
+- Complete product demo presentation structure
+- 15 detailed slides with content, metadata, and context
+- Rich semantic information for each slide
+- Keywords and related topics for better search relevance
+
+You can use this file as seed data for your assistant's knowledge base by:
+1. Converting it to vector embeddings
+2. Storing it in a vector database
+3. Enabling the assistant to search through this content when users ask about the product
+
 ## Development
 
 - Built with Vite + React + TypeScript
