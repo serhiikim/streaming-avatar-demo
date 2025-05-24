@@ -22,16 +22,15 @@
         </section>
 
         <!-- Avatar Video Section -->
-        <section class="avatar-container">
+        <section class="avatar-container" style="display: none;">
           <video id="avatarVideo" autoplay playsinline></video>
         </section>
 
-        <!-- Controls Section -->
-        <section class="controls-container">
+        <!-- Controls Section (for Avatar Mode) -->
+        <section class="controls-container" style="display: none;">
           <!-- Session Controls -->
           <div class="controls-group">
-            <button id="startSession" class="primary">Start Session</button>
-            <button id="endSession" class="danger" disabled>End Session</button>
+            <button id="endSession" class="danger" disabled>End Avatar Session</button>
           </div>
 
           <!-- Chat Controls -->
@@ -39,10 +38,10 @@
             <input
               type="text"
               id="userInput"
-              placeholder="Type your message here..."
-              aria-label="Message input"
+              placeholder="Speak to avatar..."
+              aria-label="Message input for avatar"
             />
-            <button id="speakButton" class="success">Send</button>
+            <button id="speakButton" class="success">Speak</button>
           </div>
         </section>
       </main>

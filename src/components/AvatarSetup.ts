@@ -1,4 +1,5 @@
 import { OpenAIAssistant } from "../openai-assistant";
+import { AssistantStorage } from "../storage";
 
 interface AvatarSetupProps {
   onSetupComplete: (assistant: OpenAIAssistant, openingIntro: string) => void;
@@ -22,6 +23,7 @@ export class AvatarSetup {
   constructor(props: AvatarSetupProps) {
     this.setupCompleteCallback = props.onSetupComplete;
     this.initializeForm();
+    this.loadExistingConfig();
   }
 
   private initializeForm() {
@@ -30,7 +32,10 @@ export class AvatarSetup {
     this.form.id = 'avatarSetupForm';
     this.form.className = 'controls-container';
     this.form.innerHTML = `
-      <h2>Configure Your Avatar</h2>
+      <div class="setup-header">
+        <h2>Configure Your Avatar</h2>
+        <p class="setup-description">Customize your AI assistant's behavior and personality</p>
+      </div>
       
       <div class="form-group">
         <label for="openingIntro">Opening Introduction</label>
@@ -76,19 +81,71 @@ export class AvatarSetup {
       </div>
 
       <div class="form-actions">
-        <button type="button" id="startSession" class="primary" disabled>Start Session</button>
+        <button type="button" class="secondary cancel-btn">Cancel</button>
+        <button type="button" id="startSession" class="primary" disabled>Save & Apply</button>
+      </div>
+
+      <div class="config-info">
+        <div class="info-item">
+          <span class="icon">💾</span>
+          <small>Configuration will be saved locally for future use</small>
+        </div>
+        <div class="info-item">
+          <span class="icon">🔄</span>
+          <small id="lastUpdated">No previous configuration found</small>
+        </div>
       </div>
     `;
 
     // Add form to document
     document.body.appendChild(this.form);
 
-    // Get start button reference
+    // Get button references
     this.startButton = this.form.querySelector('#startSession') as HTMLButtonElement;
+    const cancelButton = this.form.querySelector('.cancel-btn') as HTMLButtonElement;
 
     // Add event listeners
     this.form.addEventListener('input', this.validateForm.bind(this));
     this.startButton.addEventListener('click', this.handleSubmit.bind(this));
+    cancelButton.addEventListener('click', this.handleCancel.bind(this));
+  }
+
+  private loadExistingConfig() {
+    const config = AssistantStorage.getConfig();
+    
+    // Fill form with existing values
+    const openingIntroTextarea = this.form.querySelector('#openingIntro') as HTMLTextAreaElement;
+    const fullPromptTextarea = this.form.querySelector('#fullPrompt') as HTMLTextAreaElement;
+    
+    if (openingIntroTextarea && config.openingIntroduction) {
+      openingIntroTextarea.value = config.openingIntroduction;
+    }
+
+    // Update last updated info
+    const lastUpdatedElement = this.form.querySelector('#lastUpdated') as HTMLElement;
+    if (lastUpdatedElement && AssistantStorage.hasConfig()) {
+      const lastUpdated = new Date(config.lastUpdated);
+      const timeAgo = this.getTimeAgo(lastUpdated);
+      lastUpdatedElement.textContent = `Last updated: ${timeAgo}`;
+    }
+
+    // Validate form after loading
+    this.validateForm();
+  }
+
+  private getTimeAgo(date: Date): string {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffDays > 0) {
+      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    } else if (diffHours > 0) {
+      return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    } else {
+      return 'Just now';
+    }
   }
 
   private validateForm() {
@@ -97,6 +154,10 @@ export class AvatarSetup {
     
     const isValid = openingIntro.length >= 10 && fullPrompt.length >= 20;
     this.startButton.disabled = !isValid;
+  }
+
+  private handleCancel() {
+    this.form.remove();
   }
 
   private async handleSubmit(event: Event) {
@@ -114,7 +175,7 @@ export class AvatarSetup {
 
     try {
       this.startButton.disabled = true;
-      this.startButton.textContent = 'Setting up...';
+      this.startButton.textContent = 'Saving...';
       this.startButton.classList.add('loading');
 
       // Generate instructions using GPT-4
@@ -122,6 +183,12 @@ export class AvatarSetup {
       
       // Update assistant with new instructions
       const assistant = await this.updateAssistant(instructions, formData.actions);
+      
+      // Save configuration to local storage
+      AssistantStorage.saveConfig({
+        openingIntroduction: formData.openingIntro,
+        assistantId: import.meta.env.VITE_OPENAI_ASSISTANT_ID
+      });
       
       // Call the completion callback
       this.setupCompleteCallback(assistant, formData.openingIntro);
@@ -131,7 +198,7 @@ export class AvatarSetup {
     } catch (error) {
       console.error('Setup failed:', error);
       this.startButton.disabled = false;
-      this.startButton.textContent = 'Start Session';
+      this.startButton.textContent = 'Save & Apply';
       this.startButton.classList.remove('loading');
       alert('Failed to setup avatar. Please try again.');
     }
@@ -334,4 +401,4 @@ export class AvatarSetup {
       throw error;
     }
   }
-} 
+}
