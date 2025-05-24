@@ -63,19 +63,28 @@ class App {
 
         case 'chat':
           this.currentPage = this.chatPage;
-          await this.chatPage.initialize();
+          // Only initialize if not already initialized
+          if (!this.chatPage.isInitialized()) {
+            await this.chatPage.initialize();
+          }
           this.chatPage.show();
           break;
 
         case 'avatar':
           this.currentPage = this.avatarPage;
-          await this.avatarPage.initialize();
+          // Only initialize if not already initialized
+          if (!this.avatarPage.isInitialized()) {
+            await this.avatarPage.initialize();
+          }
           this.avatarPage.show();
           break;
 
         case 'settings':
           this.currentPage = this.settingsPage;
-          await this.settingsPage.initialize();
+          // Only initialize if not already initialized
+          if (!this.settingsPage.isInitialized()) {
+            await this.settingsPage.initialize();
+          }
           this.settingsPage.show();
           break;
 

@@ -23,19 +23,24 @@ export class ChatInterface {
   private createInterface() {
     // Create main container
     this.container = document.createElement('div');
-    this.container.className = 'chat-interface';
+    this.container.className = 'flex flex-col h-full bg-white rounded-xl shadow-sm';
     this.container.innerHTML = `
-      <div class="chat-messages-container">
-        <div class="chat-messages" id="chatMessages"></div>
+      <div class="flex-1 overflow-y-auto p-4 space-y-4" id="chatMessages">
+        <!-- Messages will be added here -->
       </div>
-      <div class="chat-input-container">
-        <input
-          type="text"
-          id="chatInput"
-          placeholder="Type your message here..."
-          aria-label="Message input"
-        />
-        <button id="sendButton" class="success">Send</button>
+      <div class="border-t border-gray-200 p-4">
+        <div class="flex space-x-3">
+          <input
+            type="text"
+            id="chatInput"
+            placeholder="Type your message here..."
+            aria-label="Message input"
+            class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-300 resize-none"
+          />
+          <button id="sendButton" class="px-6 py-3 bg-primary text-white rounded-xl hover:bg-blue-600 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed font-medium">
+            Send
+          </button>
+        </div>
       </div>
     `;
 
@@ -108,23 +113,31 @@ export class ChatInterface {
 
   public addMessage(message: string, isUser: boolean) {
     const messageDiv = document.createElement('div');
-    messageDiv.className = `chat-message ${isUser ? 'user' : 'assistant'}`;
+    messageDiv.className = `flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`;
     
-    // Create message content
-    const contentDiv = document.createElement('div');
-    contentDiv.className = 'chat-message-content';
-    contentDiv.textContent = message;
+    const messageContent = document.createElement('div');
+    messageContent.className = `max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
+      isUser 
+        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-br-md' 
+        : 'bg-gray-100 text-gray-800 rounded-bl-md'
+    }`;
+    
+    // Create message text
+    const textDiv = document.createElement('div');
+    textDiv.className = 'text-sm leading-relaxed';
+    textDiv.textContent = message;
     
     // Create timestamp
     const timeDiv = document.createElement('div');
-    timeDiv.className = 'chat-message-time';
+    timeDiv.className = `text-xs mt-1 ${isUser ? 'text-blue-100' : 'text-gray-500'}`;
     timeDiv.textContent = new Date().toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit'
     });
 
-    messageDiv.appendChild(contentDiv);
-    messageDiv.appendChild(timeDiv);
+    messageContent.appendChild(textDiv);
+    messageContent.appendChild(timeDiv);
+    messageDiv.appendChild(messageContent);
     
     this.messagesContainer.appendChild(messageDiv);
     this.scrollToBottom();
@@ -148,10 +161,12 @@ export class ChatInterface {
 
   public addSystemMessage(message: string) {
     const messageDiv = document.createElement('div');
-    messageDiv.className = 'chat-message system';
+    messageDiv.className = 'flex justify-center mb-4';
+    
     const contentDiv = document.createElement('div');
-    contentDiv.className = 'chat-message-content';
+    contentDiv.className = 'bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-2 rounded-full text-sm font-medium';
     contentDiv.textContent = message;
+    
     messageDiv.appendChild(contentDiv);
     this.messagesContainer.appendChild(messageDiv);
     this.scrollToBottom();

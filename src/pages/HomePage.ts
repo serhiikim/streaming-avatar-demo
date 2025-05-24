@@ -16,7 +16,7 @@ export class HomePage {
 
   private createContainer(): HTMLElement {
     const container = document.createElement('div');
-    container.className = 'page-container home-page';
+    container.className = 'min-h-screen bg-gray-50';
     container.style.display = 'none';
     document.body.appendChild(container);
     return container;
@@ -24,65 +24,117 @@ export class HomePage {
 
   private render(): void {
     this.container.innerHTML = `
-      <main class="home-content">
-        <div class="welcome-section">
-          <h2>Welcome to Your AI Assistant</h2>
-          <p>Choose how you'd like to interact with your assistant today.</p>
+      <main class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Welcome Section -->
+        <div class="text-center mb-12">
+          <h2 class="text-4xl font-bold text-gray-800 mb-4">Welcome to Your AI Assistant</h2>
+          <p class="text-xl text-gray-600">Choose how you'd like to interact with your assistant today.</p>
         </div>
         
-        <div class="mode-selection">
-          <div class="mode-card chat-card">
-            <div class="mode-icon">💬</div>
-            <h3>Chat Mode</h3>
-            <p>Text-based conversation interface with instant responses</p>
-            <div class="mode-features">
-              <span class="feature">✓ Fast responses</span>
-              <span class="feature">✓ Easy to use</span>
-              <span class="feature">✓ Works everywhere</span>
+        <!-- Mode Selection Cards -->
+        <div class="grid md:grid-cols-2 gap-8 mb-12 max-w-4xl mx-auto">
+          <!-- Chat Mode Card -->
+          <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div class="text-6xl mb-6 text-center">💬</div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Chat Mode</h3>
+            <p class="text-gray-600 mb-6 text-center">Text-based conversation interface with instant responses</p>
+            
+            <div class="space-y-2 mb-8">
+              <div class="flex items-center text-green-600">
+                <span class="mr-3">✓</span>
+                <span>Fast responses</span>
+              </div>
+              <div class="flex items-center text-green-600">
+                <span class="mr-3">✓</span>
+                <span>Easy to use</span>
+              </div>
+              <div class="flex items-center text-green-600">
+                <span class="mr-3">✓</span>
+                <span>Works everywhere</span>
+              </div>
             </div>
-            <button class="mode-button chat-button" data-route="chat">Start Chat</button>
+            
+            <button class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105" data-route="chat">
+              Start Chat
+            </button>
           </div>
           
-          <div class="mode-card avatar-card">
-            <div class="mode-icon">🎭</div>
-            <h3>Avatar Mode</h3>
-            <p>Interactive AI avatar with voice and video capabilities</p>
-            <div class="mode-features">
-              <span class="feature">✓ Visual interaction</span>
-              <span class="feature">✓ Voice responses</span>
-              <span class="feature">✓ More engaging</span>
+          <!-- Avatar Mode Card -->
+          <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div class="text-6xl mb-6 text-center">🎭</div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Avatar Mode</h3>
+            <p class="text-gray-600 mb-6 text-center">Interactive AI avatar with voice and video capabilities</p>
+            
+            <div class="space-y-2 mb-8">
+              <div class="flex items-center text-green-600">
+                <span class="mr-3">✓</span>
+                <span>Visual interaction</span>
+              </div>
+              <div class="flex items-center text-green-600">
+                <span class="mr-3">✓</span>
+                <span>Voice responses</span>
+              </div>
+              <div class="flex items-center text-green-600">
+                <span class="mr-3">✓</span>
+                <span>More engaging</span>
+              </div>
             </div>
-            <button class="mode-button avatar-button" data-route="avatar">Start Avatar</button>
+            
+            <button class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold py-3 px-6 rounded-lg hover:from-pink-600 hover:to-rose-600 transition-all duration-300 transform hover:scale-105" data-route="avatar">
+              Start Avatar
+            </button>
           </div>
         </div>
 
-        <div class="quick-actions">
-          <button class="settings-link" data-route="settings">
-            <span class="icon">⚙️</span>
-            Configure Assistant
-          </button>
+        <!-- Settings Section -->
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center space-x-4 bg-white rounded-xl shadow-md px-6 py-4 hover:shadow-lg transition-all duration-300">
+            <button class="flex items-center space-x-2 text-gray-700 hover:text-primary transition-colors" data-route="settings">
+              <span class="text-xl">⚙️</span>
+              <span class="font-medium">Configure Assistant</span>
+            </button>
+          </div>
+          <p class="text-gray-500 text-sm mt-3">Customize your assistant's personality and available actions</p>
         </div>
 
-        <div class="loading-section" style="display: none;">
-          <div class="loading-spinner"></div>
-          <p id="loadingMessage">Initializing assistant...</p>
+        <!-- Loading Section -->
+        <div class="loading-section fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
+          <div class="bg-white rounded-xl p-8 max-w-sm mx-4 text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p id="loadingMessage" class="text-gray-700 font-medium">Initializing assistant...</p>
+          </div>
         </div>
       </main>
     `;
   }
 
   private setupEventListeners(): void {
+    console.log('HomePage: Setting up event listeners');
+    
     // Mode selection buttons
     const modeButtons = this.container.querySelectorAll('[data-route]');
-    modeButtons.forEach(button => {
+    console.log('HomePage: Found buttons with data-route:', modeButtons.length);
+    
+    modeButtons.forEach((button, index) => {
+      const route = button.getAttribute('data-route');
+      console.log(`HomePage: Button ${index} has route:`, route);
+      
       button.addEventListener('click', async (e) => {
-        const target = e.target as HTMLElement;
-        const route = target.dataset.route;
+        e.preventDefault();
+        e.stopPropagation();
         
-        if (route === 'chat' || route === 'avatar') {
-          await this.handleModeSelection(route);
-        } else if (route === 'settings') {
+        const target = e.target as HTMLElement;
+        const clickedRoute = target.dataset.route || target.closest('[data-route]')?.getAttribute('data-route');
+        
+        console.log('HomePage: Button clicked, route:', clickedRoute);
+        
+        if (clickedRoute === 'chat' || clickedRoute === 'avatar') {
+          await this.handleModeSelection(clickedRoute);
+        } else if (clickedRoute === 'settings') {
+          console.log('HomePage: Navigating to settings via NavigationService');
           this.navigationService.navigateTo('settings');
+        } else {
+          console.warn('HomePage: Unknown route:', clickedRoute);
         }
       });
     });

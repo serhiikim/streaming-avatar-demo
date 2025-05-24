@@ -10,6 +10,7 @@ export class AvatarPage {
   private assistantService: AssistantService;
   private avatarService: AvatarService;
   private navigationService: NavigationService;
+  private initialized = false;
 
   constructor() {
     this.assistantService = AssistantService.getInstance();
@@ -22,7 +23,7 @@ export class AvatarPage {
 
   private createContainer(): HTMLElement {
     const container = document.createElement('div');
-    container.className = 'page-container avatar-page';
+    container.className = 'min-h-screen bg-gray-50';
     container.style.display = 'none';
     document.body.appendChild(container);
     return container;
@@ -30,65 +31,90 @@ export class AvatarPage {
 
   private render(): void {
     this.container.innerHTML = `
-      <header class="page-header">
-        <div class="header-content">
-          <div class="page-title">
-            <h2>🎭 Avatar Mode</h2>
-            <p>Interactive AI avatar with voice and video</p>
-          </div>
-          <div class="page-actions">
-            <button class="nav-button chat-button" data-route="chat">
-              <span class="icon">💬</span>
-              Switch to Chat
-            </button>
-            <button class="nav-button settings-button" data-route="settings">
-              <span class="icon">⚙️</span>
-              Settings
-            </button>
-            <button class="nav-button home-button" data-route="home">
-              <span class="icon">🏠</span>
-              Home
-            </button>
+      <!-- Header -->
+      <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+              <span class="text-2xl">🎭</span>
+              <div>
+                <h2 class="text-xl font-bold text-gray-800">Avatar Mode</h2>
+                <p class="text-sm text-gray-600">Interactive AI avatar with voice and video</p>
+              </div>
+            </div>
+            
+            <div class="flex space-x-3">
+              <button class="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105" data-route="chat">
+                <span>💬</span>
+                <span class="font-medium">Switch to Chat</span>
+              </button>
+              
+              <button class="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-300" data-route="settings">
+                <span>⚙️</span>
+                <span class="font-medium">Settings</span>
+              </button>
+              
+              <button class="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-300" data-route="home">
+                <span>🏠</span>
+                <span class="font-medium">Home</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
       
-      <main class="avatar-layout">
-        <!-- 1/3 Chat Section -->
-        <div class="avatar-chat-section">
-          <div class="chat-header">
-            <h3>Conversation History</h3>
-          </div>
-          <div id="avatarChatContainer" class="avatar-chat-container"></div>
-        </div>
-        
-        <!-- 2/3 Avatar Section -->
-        <div class="avatar-video-section">
-          <div class="avatar-video-container">
-            <video id="avatarVideo" autoplay playsinline></video>
-            <div class="avatar-status" id="avatarStatus">
-              <span class="status-indicator disconnected"></span>
-              <span class="status-text">Disconnected</span>
+      <!-- Main Split Layout -->
+      <main class="flex-1 max-w-7xl mx-auto px-4 py-6">
+        <div class="grid grid-cols-3 gap-6 h-[calc(100vh-200px)]">
+          <!-- 1/3 Chat Section -->
+          <div class="col-span-1 bg-white rounded-2xl shadow-lg border border-gray-200 flex flex-col">
+            <div class="p-4 border-b border-gray-200">
+              <h3 class="font-semibold text-gray-800">Conversation History</h3>
             </div>
+            <div id="avatarChatContainer" class="flex-1 overflow-hidden"></div>
           </div>
           
-          <div class="avatar-controls">
-            <div class="input-group">
-              <input type="text" id="avatarInput" placeholder="Type your message..." />
-              <button id="speakButton" class="speak-btn">
-                <span class="icon">🎤</span>
-                Send
-              </button>
+          <!-- 2/3 Avatar Section -->
+          <div class="col-span-2 space-y-4">
+            <!-- Video Container -->
+            <div class="bg-black rounded-2xl shadow-lg overflow-hidden relative" style="aspect-ratio: 16/9;">
+              <video id="avatarVideo" autoplay playsinline class="w-full h-full object-cover"></video>
+              
+              <!-- Status Indicator -->
+              <div id="avatarStatus" class="absolute top-4 left-4 flex items-center space-x-2 bg-black bg-opacity-70 text-white px-3 py-2 rounded-full text-sm">
+                <span class="status-indicator w-2 h-2 rounded-full bg-gray-400"></span>
+                <span class="status-text">Disconnected</span>
+              </div>
             </div>
-            <div class="control-buttons">
-              <button id="connectButton" class="connect-btn">
-                <span class="icon">🔗</span>
-                Connect Avatar
-              </button>
-              <button id="endSession" class="end-btn" disabled>
-                <span class="icon">⏹️</span>
-                End Session
-              </button>
+            
+            <!-- Controls -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+              <!-- Input Group -->
+              <div class="flex space-x-3 mb-4">
+                <input 
+                  type="text" 
+                  id="avatarInput" 
+                  placeholder="Type your message..." 
+                  class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-300"
+                />
+                <button id="speakButton" class="flex items-center space-x-2 px-6 py-3 bg-success text-white rounded-xl hover:bg-green-600 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <span>🎤</span>
+                  <span class="font-medium">Send</span>
+                </button>
+              </div>
+              
+              <!-- Control Buttons -->
+              <div class="flex space-x-3">
+                <button id="connectButton" class="flex items-center space-x-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-all duration-300">
+                  <span>🔗</span>
+                  <span class="font-medium">Connect Avatar</span>
+                </button>
+                
+                <button id="endSession" class="flex items-center space-x-2 px-4 py-2 bg-danger text-white rounded-lg hover:bg-red-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                  <span>⏹️</span>
+                  <span class="font-medium">End Session</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -144,6 +170,11 @@ export class AvatarPage {
   }
 
   async initialize(): Promise<void> {
+    // Only initialize once
+    if (this.initialized) {
+      return;
+    }
+
     try {
       // Ensure assistant is ready
       if (!this.assistantService.isReady()) {
@@ -169,12 +200,17 @@ export class AvatarPage {
         chatContainer.appendChild(this.chatInterface.getContainer());
       }
 
+      this.initialized = true;
       console.log('AvatarPage initialized successfully');
       
     } catch (error) {
       console.error('Failed to initialize AvatarPage:', error);
       this.showError('Failed to initialize avatar interface.');
     }
+  }
+
+  isInitialized(): boolean {
+    return this.initialized;
   }
 
   private async initializeAvatar(): Promise<void> {
@@ -261,7 +297,27 @@ export class AvatarPage {
     const textElement = statusElement.querySelector('.status-text');
     
     if (indicator) {
-      indicator.className = `status-indicator ${status}`;
+      // Remove all status classes
+      indicator.classList.remove('bg-gray-400', 'bg-yellow-400', 'bg-green-400', 'bg-orange-400', 'bg-red-400');
+      
+      // Add appropriate status class
+      switch (status) {
+        case 'connecting':
+          indicator.classList.add('bg-yellow-400', 'animate-pulse');
+          break;
+        case 'connected':
+          indicator.classList.add('bg-green-400');
+          break;
+        case 'disconnecting':
+          indicator.classList.add('bg-orange-400', 'animate-pulse');
+          break;
+        case 'disconnected':
+          indicator.classList.add('bg-gray-400');
+          break;
+        case 'error':
+          indicator.classList.add('bg-red-400');
+          break;
+      }
     }
     
     if (textElement) {
