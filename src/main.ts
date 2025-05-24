@@ -14,6 +14,7 @@ const videoElement = document.getElementById("avatarVideo") as HTMLVideoElement;
 const endButton = document.getElementById("endSession") as HTMLButtonElement;
 const speakButton = document.getElementById("speakButton") as HTMLButtonElement;
 const userInput = document.getElementById("userInput") as HTMLInputElement;
+const chatMessages = document.getElementById("chatMessages") as HTMLDivElement;
 
 let avatar: StreamingAvatar | null = null;
 let sessionData: any = null;
@@ -33,22 +34,32 @@ async function fetchAccessToken(): Promise<string> {
   return data.token;
 }
 
+// Helper function to add message to chat
+function addMessageToChat(message: string, isUser: boolean) {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
+  messageDiv.textContent = message;
+  chatMessages.appendChild(messageDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
 // Initialize streaming avatar session
 async function initializeAvatarSession(assistant: OpenAIAssistant, openingIntro: string) {
   try {
-    const token = await fetchAccessToken();
-    avatar = new StreamingAvatar({ token });
+    // Temporarily disable HeyGen API calls
+    // const token = await fetchAccessToken();
+    // avatar = new StreamingAvatar({ token });
     
-    avatar.on(StreamingEvents.STREAM_READY, handleStreamReady);
-    avatar.on(StreamingEvents.STREAM_DISCONNECTED, handleStreamDisconnected);
+    // avatar.on(StreamingEvents.STREAM_READY, handleStreamReady);
+    // avatar.on(StreamingEvents.STREAM_DISCONNECTED, handleStreamDisconnected);
     
-    sessionData = await avatar.createStartAvatar({
-      quality: AvatarQuality.Medium,
-      avatarName: "Wayne_20240711",
-      language: "English",
-    });
+    // sessionData = await avatar.createStartAvatar({
+    //   quality: AvatarQuality.Medium,
+    //   avatarName: "Wayne_20240711",
+    //   language: "English",
+    // });
 
-    console.log("Session data:", sessionData);
+    console.log("Chat session initialized");
 
     // Enable end button
     endButton.disabled = false;
@@ -56,14 +67,18 @@ async function initializeAvatarSession(assistant: OpenAIAssistant, openingIntro:
     // Store assistant reference
     openaiAssistant = assistant;
 
-    // Get and speak the intro message
-    await avatar.speak({
-      text: openingIntro,
-      taskType: TaskType.REPEAT,
-    });
+    // Add intro message to chat
+    addMessageToChat(openingIntro, false);
+
+    // Temporarily disable avatar speak
+    // await avatar.speak({
+    //   text: openingIntro,
+    //   taskType: TaskType.REPEAT,
+    // });
 
   } catch (error) {
-    console.error("Failed to initialize avatar session:", error);
+    console.error("Failed to initialize session:", error);
+    addMessageToChat("Failed to initialize session. Please try again.", false);
   }
 }
 
@@ -92,27 +107,38 @@ function handleStreamDisconnected() {
 
 // End the avatar session
 async function terminateAvatarSession() {
-  if (!avatar || !sessionData) return;
-
-  await avatar.stopAvatar();
-  videoElement.srcObject = null;
-  avatar = null;
+  // Temporarily disable avatar cleanup
+  // if (!avatar || !sessionData) return;
+  // await avatar.stopAvatar();
+  // videoElement.srcObject = null;
+  // avatar = null;
   openaiAssistant = null;
+  endButton.disabled = true;
+  addMessageToChat("Session ended.", false);
 }
 
 // Handle speaking event
 async function handleSpeak() {
-  if (avatar && openaiAssistant && userInput.value) {
+  if (openaiAssistant && userInput.value) {
     try {
-      const response = await openaiAssistant.getResponse(userInput.value);
-      await avatar.speak({
-        text: response,
-        taskType: TaskType.REPEAT,
-      });
+      const userMessage = userInput.value;
+      addMessageToChat(userMessage, true);
+      userInput.value = ""; // Clear input after speaking
+
+      const response = await openaiAssistant.getResponse(userMessage);
+      addMessageToChat(response, false);
+      
+      // Temporarily disable avatar speak
+      // if (avatar) {
+      //   await avatar.speak({
+      //     text: response,
+      //     taskType: TaskType.REPEAT,
+      //   });
+      // }
     } catch (error) {
       console.error("Error getting response:", error);
+      addMessageToChat("Sorry, there was an error processing your request.", false);
     }
-    userInput.value = ""; // Clear input after speaking
   }
 }
 
