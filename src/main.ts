@@ -1,140 +1,152 @@
-import StreamingAvatar, {
-  AvatarQuality,
-  StreamingEvents,
-  TaskType
-} from "@heygen/streaming-avatar";
+import { NavigationService, type Route } from "./services/NavigationService";
+import { AssistantService } from "./services/AssistantService";
+import { AvatarService } from "./services/AvatarService";
+import { HomePage } from "./pages/HomePage";
+import { ChatPage } from "./pages/ChatPage";
+import { AvatarPage } from "./pages/AvatarPage";
+import { SettingsPage } from "./pages/SettingsPage";
 
-import { OpenAIAssistant } from "./openai-assistant";
-import { AvatarSetup } from "./components/AvatarSetup";
+class App {
+  private navigationService: NavigationService;
+  
+  // Page instances
+  private homePage: HomePage;
+  private chatPage: ChatPage;
+  private avatarPage: AvatarPage;
+  private settingsPage: SettingsPage;
+  
+  private currentPage: any = null;
 
-let openaiAssistant: OpenAIAssistant | null = null;
-
-// DOM elements
-const videoElement = document.getElementById("avatarVideo") as HTMLVideoElement;
-const endButton = document.getElementById("endSession") as HTMLButtonElement;
-const speakButton = document.getElementById("speakButton") as HTMLButtonElement;
-const userInput = document.getElementById("userInput") as HTMLInputElement;
-
-let avatar: StreamingAvatar | null = null;
-let sessionData: any = null;
-
-// Helper function to fetch access token
-async function fetchAccessToken(): Promise<string> {
-  const apiKey = import.meta.env.VITE_HEYGEN_API_KEY;
-  const response = await fetch(
-    "https://api.heygen.com/v1/streaming.create_token",
-    {
-      method: "POST",
-      headers: { "x-api-key": apiKey },
-    }
-  );
-
-  const { data } = await response.json();
-  return data.token;
-}
-
-// Initialize streaming avatar session
-async function initializeAvatarSession(assistant: OpenAIAssistant, openingIntro: string) {
-  try {
-    const token = await fetchAccessToken();
-    avatar = new StreamingAvatar({ token });
+  constructor() {
+    // Initialize services
+    this.navigationService = NavigationService.getInstance();
     
-    avatar.on(StreamingEvents.STREAM_READY, handleStreamReady);
-    avatar.on(StreamingEvents.STREAM_DISCONNECTED, handleStreamDisconnected);
+    // Initialize other services (they're singletons, pages will use them)
+    AssistantService.getInstance();
+    AvatarService.getInstance();
     
-    sessionData = await avatar.createStartAvatar({
-      quality: AvatarQuality.Medium,
-      avatarName: "Wayne_20240711",
-      language: "English",
+    // Create page instances
+    this.homePage = new HomePage();
+    this.chatPage = new ChatPage();
+    this.avatarPage = new AvatarPage();
+    this.settingsPage = new SettingsPage();
+    
+    this.setupRouting();
+    this.hideOriginalContainer();
+  }
+
+  private setupRouting(): void {
+    // Set route handler
+    this.navigationService.setRouteHandler(async (route: Route) => {
+      await this.handleRouteChange(route);
     });
 
-    console.log("Session data:", sessionData);
-
-    // Enable end button
-    endButton.disabled = false;
-    
-    // Store assistant reference
-    openaiAssistant = assistant;
-
-    // Get and speak the intro message
-    await avatar.speak({
-      text: openingIntro,
-      taskType: TaskType.REPEAT,
+    // Set navigation callback for cleanup/preparation
+    this.navigationService.setNavigationCallback((route: Route, previousRoute: Route) => {
+      console.log(`Navigation: ${previousRoute} → ${route}`);
     });
-
-  } catch (error) {
-    console.error("Failed to initialize avatar session:", error);
-  }
-}
-
-// Handle when avatar stream is ready
-function handleStreamReady(event: any) {
-  if (event.detail && videoElement) {
-    videoElement.srcObject = event.detail;
-    videoElement.onloadedmetadata = () => {
-      videoElement.play().catch(console.error);
-    };
-  } else {
-    console.error("Stream is not available");
-  }
-}
-
-// Handle stream disconnection
-function handleStreamDisconnected() {
-  console.log("Stream disconnected");
-  if (videoElement) {
-    videoElement.srcObject = null;
   }
 
-  // Disable end button
-  endButton.disabled = true;
-}
-
-// End the avatar session
-async function terminateAvatarSession() {
-  if (!avatar || !sessionData) return;
-
-  await avatar.stopAvatar();
-  videoElement.srcObject = null;
-  avatar = null;
-  openaiAssistant = null;
-}
-
-// Handle speaking event
-async function handleSpeak() {
-  if (avatar && openaiAssistant && userInput.value) {
+  private async handleRouteChange(route: Route): Promise<void> {
     try {
-      const response = await openaiAssistant.getResponse(userInput.value);
-      await avatar.speak({
-        text: response,
-        taskType: TaskType.REPEAT,
-      });
+      // Hide current page
+      if (this.currentPage) {
+        this.currentPage.hide();
+      }
+
+      // Handle route-specific logic
+      switch (route) {
+        case 'home':
+          this.currentPage = this.homePage;
+          this.homePage.show();
+          break;
+
+        case 'chat':
+          this.currentPage = this.chatPage;
+          // Only initialize if not already initialized
+          if (!this.chatPage.isInitialized()) {
+            await this.chatPage.initialize();
+          }
+          this.chatPage.show();
+          break;
+
+        case 'avatar':
+          this.currentPage = this.avatarPage;
+          // Only initialize if not already initialized
+          if (!this.avatarPage.isInitialized()) {
+            await this.avatarPage.initialize();
+          }
+          this.avatarPage.show();
+          break;
+
+        case 'settings':
+          this.currentPage = this.settingsPage;
+          // Only initialize if not already initialized
+          if (!this.settingsPage.isInitialized()) {
+            await this.settingsPage.initialize();
+          }
+          this.settingsPage.show();
+          break;
+
+        default:
+          console.warn(`Unknown route: ${route}`);
+          this.navigationService.navigateTo('home');
+      }
+
     } catch (error) {
-      console.error("Error getting response:", error);
+      console.error(`Error handling route ${route}:`, error);
+      this.showGlobalError(`Failed to load ${route} page`);
     }
-    userInput.value = ""; // Clear input after speaking
+  }
+
+  private hideOriginalContainer(): void {
+    // Hide the original container from index.html
+    const originalContainer = document.querySelector('.container') as HTMLElement;
+    if (originalContainer) {
+      originalContainer.style.display = 'none';
+    }
+  }
+
+  private showGlobalError(message: string): void {
+    // Simple global error handling - you can enhance this
+    console.error('Global Error:', message);
+    alert(`Error: ${message}`);
+    
+    // Fallback to home page
+    this.navigationService.navigateTo('home');
+  }
+
+  // Public method to start the application
+  start(): void {
+    console.log('🚀 Interactive Avatar Demo starting...');
+    
+    // Start navigation service (this will trigger initial route)
+    this.navigationService.start();
+    
+    console.log('✅ Application started successfully');
+  }
+
+  // Cleanup method (if needed for hot reload during development)
+  destroy(): void {
+    this.homePage.destroy();
+    this.chatPage.destroy();
+    this.avatarPage.destroy();
+    this.settingsPage.destroy();
   }
 }
 
-// Initialize the application
-function initializeApp() {
-  // Create avatar setup
-  const setup = new AvatarSetup({
-    onSetupComplete: async (assistant, openingIntro) => {
-      await initializeAvatarSession(assistant, openingIntro);
-    }
-  });
+// Global error handler
+window.addEventListener('error', (event) => {
+  console.error('Global JavaScript Error:', event.error);
+});
 
-  // Get the main container and insert setup form before it
-  const mainContainer = document.querySelector('.container');
-  if (mainContainer && mainContainer.parentNode) {
-    mainContainer.parentNode.insertBefore(setup.form, mainContainer);
-  }
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('Unhandled Promise Rejection:', event.reason);
+});
 
-  // Add event listeners
-  endButton.addEventListener("click", terminateAvatarSession);
-  speakButton.addEventListener("click", handleSpeak);
-}
+// Initialize and start the application
+const app = new App();
+app.start();
 
-// Start the application
-initializeApp();
+// Expose app to window for debugging (optional)
+(window as any).app = app;
