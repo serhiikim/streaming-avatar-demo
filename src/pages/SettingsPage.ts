@@ -114,8 +114,8 @@ export class SettingsPage {
       
       // Create avatar setup component
       this.avatarSetup = new AvatarSetup({
-        onSetupComplete: async (assistant, openingIntro) => {
-          await this.handleSetupComplete(assistant, openingIntro);
+        onSetupComplete: async () => {
+          await this.handleSetupComplete();
         }
       });
 
@@ -141,7 +141,7 @@ export class SettingsPage {
     return this.initialized;
   }
 
-  private async handleSetupComplete(assistant: any, openingIntro: string): Promise<void> {
+  private async handleSetupComplete(): Promise<void> {
     try {
       console.log('SettingsPage: Configuration saved, reinitializing assistant...');
       
