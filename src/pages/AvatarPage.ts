@@ -63,19 +63,19 @@ export class AvatarPage {
         </div>
       </header>
       
-      <!-- Main Split Layout -->
-      <main class="flex-1 max-w-7xl mx-auto px-4 py-6">
-        <div class="grid grid-cols-3 gap-6 h-[calc(100vh-200px)]">
+<!-- Main Split Layout -->
+      <main class="max-w-7xl mx-auto px-4 py-6">
+        <div class="flex gap-6 h-[calc(100vh-200px)]">
           <!-- 1/3 Chat Section -->
-          <div class="col-span-1 bg-white rounded-2xl shadow-lg border border-gray-200 flex flex-col">
-            <div class="p-4 border-b border-gray-200">
+          <div class="w-1/3 bg-white rounded-2xl shadow-lg border border-gray-200 flex flex-col">
+            <div class="p-4 border-b border-gray-200 flex-shrink-0">
               <h3 class="font-semibold text-gray-800">Conversation History</h3>
             </div>
-            <div id="avatarChatContainer" class="flex-1 overflow-hidden"></div>
+            <div id="avatarChatContainer" class="h-full flex flex-col"></div>
           </div>
           
           <!-- 2/3 Avatar Section -->
-          <div class="col-span-2 space-y-4">
+          <div class="w-2/3 space-y-4">
             <!-- Video Container -->
             <div class="bg-black rounded-2xl shadow-lg overflow-hidden relative" style="aspect-ratio: 16/9;">
               <video id="avatarVideo" autoplay playsinline class="w-full h-full object-cover"></video>
@@ -89,7 +89,7 @@ export class AvatarPage {
             
             <!-- Controls -->
             <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-              <!-- Input Group -->
+                          <!-- Input Group -->
               <div class="flex space-x-3 mb-4">
                 <input 
                   type="text" 
@@ -102,7 +102,6 @@ export class AvatarPage {
                   <span class="font-medium">Send</span>
                 </button>
               </div>
-              
               <!-- Control Buttons -->
               <div class="flex space-x-3">
                 <button id="connectButton" class="flex items-center space-x-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-all duration-300">
