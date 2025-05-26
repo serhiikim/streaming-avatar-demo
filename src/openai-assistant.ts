@@ -47,6 +47,9 @@ export class OpenAIAssistant {
               case 'show_slide':
                 await webhookActions.showSlide(args.slide_id, args.context_summary);
                 break;
+                case 'submit_survey_data':
+                  await webhookActions.submitSurveyData(args.questions, args.answers);
+                break;
             }
             console.log(`Successfully executed ${functionName}`);
           } catch (error) {

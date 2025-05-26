@@ -1,6 +1,8 @@
 import { FormField } from "./FormField";
 import { ActionSelector } from "./ActionSelector";
 import type { AssistantConfig } from "../../services/AssistantConfigService";
+import { SurveyManager } from "../SurveyManager";
+import type { SurveyConfig } from "../SurveyManager";
 
 export interface SetupFormProps {
   onSubmit: (config: AssistantConfig) => Promise<void>;
@@ -16,11 +18,11 @@ export class SetupForm {
   private actionSelector!: ActionSelector;
   private submitButton!: HTMLButtonElement;
   private cancelButton!: HTMLButtonElement;
-  
+  private surveyManager!: SurveyManager;
   private props: SetupFormProps;
   private isValid = false;
   private isSubmitting = false;
-  private isValidating = false; // Add this to prevent recursion
+  private isValidating = false;
 
   constructor(props: SetupFormProps) {
     this.props = props;
@@ -51,6 +53,7 @@ export class SetupForm {
           <div id="openingIntroContainer"></div>
           <div id="behaviorContainer"></div>
           <div id="actionsContainer"></div>
+          <div id="surveyContainer"></div>
         </div>
 
         <!-- Form Actions -->
@@ -96,7 +99,6 @@ export class SetupForm {
       minLength: 10,
       rows: 4,
       onChange: () => this.validateForm()
-      // Remove onValidation to break the loop
     });
 
     // Behavior Instructions Field
@@ -110,7 +112,6 @@ export class SetupForm {
       minLength: 20,
       rows: 6,
       onChange: () => this.validateForm()
-      // Remove onValidation to break the loop
     });
 
     // Action Selector
@@ -133,19 +134,61 @@ export class SetupForm {
           title: 'Show Slides',
           description: 'Allow avatar to display presentation slides',
           icon: '📊'
+        },
+        {
+          id: 'submitSurveyData',
+          title: 'Submit Survey Data',
+          description: 'Enable survey data submission capabilities',
+          icon: '📝'
         }
       ],
       onChange: () => this.validateForm()
     });
 
+    // Survey Manager
+    const initialSurveyConfig: SurveyConfig = {
+      enabled: this.props.initialValues?.survey?.enabled || false,
+      questions: this.props.initialValues?.survey?.questions || []
+    };
+
+    this.surveyManager = new SurveyManager(
+      document.createElement('div'), // Temporary container
+      initialSurveyConfig,
+      (surveyConfig) => {
+        // Auto-update submitSurveyData action when survey is enabled/disabled
+        this.updateSubmitSurveyDataAction(surveyConfig);
+        this.validateForm();
+      }
+    );
+
     // Add fields to containers
     const openingIntroContainer = this.container.querySelector('#openingIntroContainer');
     const behaviorContainer = this.container.querySelector('#behaviorContainer');
     const actionsContainer = this.container.querySelector('#actionsContainer');
+    const surveyContainer = this.container.querySelector('#surveyContainer');
 
     if (openingIntroContainer) openingIntroContainer.appendChild(this.openingIntroField.getContainer());
     if (behaviorContainer) behaviorContainer.appendChild(this.behaviorField.getContainer());
     if (actionsContainer) actionsContainer.appendChild(this.actionSelector.getContainer());
+    if (surveyContainer) surveyContainer.appendChild(this.surveyManager.getContainer());
+  }
+
+  private updateSubmitSurveyDataAction(surveyConfig: SurveyConfig): void {
+    const currentActions = this.actionSelector.getSelectedActions();
+    
+    if (surveyConfig.enabled && surveyConfig.questions.length > 0) {
+      // Auto-enable submitSurveyData when survey is enabled with questions
+      if (!currentActions.includes('submitSurveyData')) {
+        const newActions = [...currentActions, 'submitSurveyData'];
+        this.actionSelector.setSelectedActions(newActions);
+      }
+    } else {
+      // Auto-disable submitSurveyData when survey is disabled
+      if (currentActions.includes('submitSurveyData')) {
+        const newActions = currentActions.filter(action => action !== 'submitSurveyData');
+        this.actionSelector.setSelectedActions(newActions);
+      }
+    }
   }
 
   private setupEventListeners(): void {
@@ -163,7 +206,7 @@ export class SetupForm {
 
   private loadInitialValues(): void {
     if (this.props.initialValues) {
-      const { openingIntro, fullPrompt, actions } = this.props.initialValues;
+      const { openingIntro, fullPrompt, actions, survey } = this.props.initialValues;
       
       if (openingIntro) {
         this.openingIntroField.setValue(openingIntro);
@@ -179,6 +222,10 @@ export class SetupForm {
           .map(([action]) => action);
         this.actionSelector.setSelectedActions(selectedActions);
       }
+
+      if (survey) {
+        this.surveyManager.updateConfig(survey);
+      }
     }
     
     this.validateForm();
@@ -192,12 +239,31 @@ export class SetupForm {
     // Get current values and check basic requirements
     const openingIntroValue = this.openingIntroField.getValue();
     const behaviorValue = this.behaviorField.getValue();
+    const surveyConfig = this.surveyManager.getConfig();
     
     const openingIntroValid = openingIntroValue.length >= 10;
     const behaviorValid = behaviorValue.length >= 20;
     
-    this.isValid = openingIntroValid && behaviorValid;
+    // Survey validation: if enabled, must have at least one non-empty question
+    let surveyValid = true;
+    if (surveyConfig.enabled) {
+      surveyValid = surveyConfig.questions.length > 0 && 
+                   surveyConfig.questions.every(q => q.trim().length > 0);
+    }
+    
+    this.isValid = openingIntroValid && behaviorValid && surveyValid;
     this.submitButton.disabled = !this.isValid || this.isSubmitting;
+    
+    // Update submit button text based on validation
+    if (!this.isSubmitting) {
+      if (!surveyValid && surveyConfig.enabled) {
+        this.submitButton.innerHTML = 'Please add survey questions';
+      } else if (!openingIntroValid || !behaviorValid) {
+        this.submitButton.innerHTML = 'Please complete required fields';
+      } else {
+        this.submitButton.innerHTML = 'Save & Apply';
+      }
+    }
     
     this.isValidating = false;
   }
@@ -210,10 +276,13 @@ export class SetupForm {
     this.showSubmittingState();
 
     try {
+      const surveyConfig = this.surveyManager.getConfig();
+      
       const config: AssistantConfig = {
         openingIntro: this.openingIntroField.getValue(),
         fullPrompt: this.behaviorField.getValue(),
-        actions: this.getSelectedActionsConfig()
+        actions: this.getSelectedActionsConfig(),
+        survey: surveyConfig
       };
 
       await this.props.onSubmit(config);
@@ -233,7 +302,8 @@ export class SetupForm {
     return {
       callHuman: selectedActions.includes('callHuman'),
       scheduleMeeting: selectedActions.includes('scheduleMeeting'),
-      showSlide: selectedActions.includes('showSlide')
+      showSlide: selectedActions.includes('showSlide'),
+      submitSurveyData: selectedActions.includes('submitSurveyData')
     };
   }
 
@@ -325,6 +395,7 @@ export class SetupForm {
     this.openingIntroField.setValue('');
     this.behaviorField.setValue('');
     this.actionSelector.setSelectedActions([]);
+    this.surveyManager.updateConfig({ enabled: false, questions: [] });
     this.validateForm();
   }
 }
