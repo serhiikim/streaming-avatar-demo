@@ -156,8 +156,7 @@ export class ChatPage {
   show(): void {
     this.container.style.display = 'block';
     
-    // 🔧 КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: Пересоздать интерфейс при показе
-    // Это гарантирует свежий welcome message и новый thread
+
     if (this.initialized) {
       this.createChatInterface();
     }

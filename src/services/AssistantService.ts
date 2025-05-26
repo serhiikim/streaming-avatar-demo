@@ -36,15 +36,12 @@ export class AssistantService {
     }
   }
 
-  // Новый метод для полной переинициализации
   async reinitialize(): Promise<void> {
     console.log('AssistantService: Reinitializing...');
     
-    // Сбросить состояние
     this.assistant = null;
     this.isInitialized = false;
     
-    // Создать новый assistant напрямую (без проверки в initialize)
     try {
       this.assistant = new OpenAIAssistant(
         import.meta.env.VITE_OPENAI_API_KEY,
