@@ -94,28 +94,7 @@ export class ChatPage {
         await this.assistantService.initialize();
       }
 
-      // Create chat interface
-      const assistant = this.assistantService.getAssistant();
-      if (!assistant) {
-        throw new Error('Assistant not available');
-      }
-
-      this.chatInterface = new ChatInterface({
-        assistant: assistant,
-        onMessageSent: (message, response) => {
-          console.log('Chat message sent:', { message, response });
-        }
-      });
-
-      // Add chat interface to container
-      const chatContainer = this.container.querySelector('#chatContainer') as HTMLElement;
-      if (chatContainer) {
-        chatContainer.appendChild(this.chatInterface.getContainer());
-        
-        // Add welcome message
-        const welcomeMessage = this.assistantService.getWelcomeMessage();
-        this.chatInterface.addMessage(welcomeMessage, false);
-      }
+      await this.createChatInterface();
 
       this.initialized = true;
       console.log('ChatPage initialized successfully');
@@ -123,6 +102,33 @@ export class ChatPage {
     } catch (error) {
       console.error('Failed to initialize ChatPage:', error);
       this.showError('Failed to initialize chat interface.');
+    }
+  }
+
+  private async createChatInterface(): Promise<void> {
+    // Create chat interface
+    const assistant = this.assistantService.getAssistant();
+    if (!assistant) {
+      throw new Error('Assistant not available');
+    }
+
+    this.chatInterface = new ChatInterface({
+      assistant: assistant,
+      onMessageSent: (message, response) => {
+        console.log('Chat message sent:', { message, response });
+      }
+    });
+
+    // Add chat interface to container
+    const chatContainer = this.container.querySelector('#chatContainer') as HTMLElement;
+    if (chatContainer) {
+      // Clear container first
+      chatContainer.innerHTML = '';
+      chatContainer.appendChild(this.chatInterface.getContainer());
+      
+      // Add welcome message (always fresh from storage)
+      const welcomeMessage = this.assistantService.getWelcomeMessage();
+      this.chatInterface.addMessage(welcomeMessage, false);
     }
   }
 
@@ -150,6 +156,12 @@ export class ChatPage {
   show(): void {
     this.container.style.display = 'block';
     
+    // 🔧 КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: Пересоздать интерфейс при показе
+    // Это гарантирует свежий welcome message и новый thread
+    if (this.initialized) {
+      this.createChatInterface();
+    }
+    
     // Focus chat input if available
     if (this.chatInterface) {
       this.chatInterface.focus();
@@ -171,30 +183,7 @@ export class ChatPage {
     if (!this.chatInterface) return;
 
     try {
-      const assistant = this.assistantService.getAssistant();
-      if (!assistant) return;
-
-      // Create new chat interface with updated assistant
-      const newChatInterface = new ChatInterface({
-        assistant: assistant,
-        onMessageSent: (message, response) => {
-          console.log('Chat message sent:', { message, response });
-        }
-      });
-
-      // Replace old interface
-      const chatContainer = this.container.querySelector('#chatContainer') as HTMLElement;
-      if (chatContainer) {
-        chatContainer.innerHTML = '';
-        chatContainer.appendChild(newChatInterface.getContainer());
-        
-        // Add updated welcome message
-        const welcomeMessage = this.assistantService.getWelcomeMessage();
-        newChatInterface.addMessage(welcomeMessage, false);
-      }
-
-      this.chatInterface = newChatInterface;
-      
+      await this.createChatInterface();
     } catch (error) {
       console.error('Failed to update chat assistant:', error);
     }

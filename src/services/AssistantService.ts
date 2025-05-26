@@ -36,6 +36,31 @@ export class AssistantService {
     }
   }
 
+  // Новый метод для полной переинициализации
+  async reinitialize(): Promise<void> {
+    console.log('AssistantService: Reinitializing...');
+    
+    // Сбросить состояние
+    this.assistant = null;
+    this.isInitialized = false;
+    
+    // Создать новый assistant напрямую (без проверки в initialize)
+    try {
+      this.assistant = new OpenAIAssistant(
+        import.meta.env.VITE_OPENAI_API_KEY,
+        import.meta.env.VITE_OPENAI_ASSISTANT_ID
+      );
+      
+      await this.assistant.initialize();
+      this.isInitialized = true;
+      
+      console.log('AssistantService: Reinitialized successfully');
+    } catch (error) {
+      console.error('Failed to reinitialize AssistantService:', error);
+      throw new Error('Assistant reinitialization failed');
+    }
+  }
+
   async sendMessage(message: string): Promise<string> {
     if (!this.assistant) {
       throw new Error('Assistant not initialized');

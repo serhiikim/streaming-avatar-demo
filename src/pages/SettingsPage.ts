@@ -143,11 +143,9 @@ export class SettingsPage {
 
   private async handleSetupComplete(assistant: any, openingIntro: string): Promise<void> {
     try {
-      // Update assistant service
-      await this.assistantService.updateConfiguration(assistant);
+      console.log('SettingsPage: Configuration saved, reinitializing assistant...');
       
-      // Update welcome message in storage
-      this.assistantService.updateWelcomeMessage(openingIntro);
+      await this.assistantService.reinitialize();
       
       // Show success message
       this.showSuccess('Configuration saved successfully!');
