@@ -8,6 +8,11 @@ export interface AssistantConfig {
     callHuman: boolean;
     scheduleMeeting: boolean;
     showSlide: boolean;
+    submitSurveyData: boolean;
+  };
+  survey: {
+    enabled: boolean;
+    questions: string[];
   };
 }
 
@@ -86,10 +91,34 @@ export class AssistantConfigService {
       .filter(([_, enabled]) => enabled)
       .map(([action]) => action)
       .join(', ');
+      let surveyInstructions = '';
+  if (config.survey.enabled && config.survey.questions.length > 0) {
+    surveyInstructions = `
+    
+MANDATORY SURVEY FLOW:
+After providing your opening introduction, you MUST conduct a survey with these questions:
+${config.survey.questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
+
+SURVEY RULES:
+1. Ask questions ONE AT A TIME in the exact order provided
+2. Wait for user's response before asking the next question
+3. Do not allow user to skip questions - politely redirect if they try
+4. Keep track of all answers
+5. After collecting all answers, call submit_survey_data function with the responses
+6. Only after survey completion, proceed with normal conversation
+
+SURVEY EXECUTION EXAMPLE:
+- Ask question 1, wait for answer
+- Ask question 2, wait for answer
+- Continue until all questions answered
+- Call submit_survey_data with all collected answers
+- Then say: "Thank you for completing the survey! How can I help you today?"`;
+  }
 
     return `Create comprehensive instructions for an OpenAI Assistant based on:
       Full Prompt: ${config.fullPrompt}
       Available Actions: ${enabledActions}
+      ${surveyInstructions}
       
       CRITICAL FUNCTION CALLING INSTRUCTIONS:
 You MUST call functions when users request the corresponding actions. Never just explain what you could do - actually perform the action by calling the function.
@@ -178,6 +207,31 @@ Remember: The goal is to be helpful and proactive. When in doubt, use the functi
       });
     }
 
+    if (actions.submitSurveyData) {
+      tools.push({
+        type: 'function',
+        function: {
+          name: 'submit_survey_data',
+          description: 'Submit collected survey responses',
+          parameters: {
+            type: 'object',
+            properties: {
+              questions: {
+                type: 'array', 
+                items: { type: 'string' },
+                description: 'Array of questions that were asked'
+              },
+              answers: {
+                type: 'array',
+                items: { type: 'string' },
+                description: 'Array of user answers to survey questions'
+              }
+            },
+            required: ['questions', 'answers']
+          }
+        }
+      });
+    }
     if (actions.scheduleMeeting) {
       tools.push({
         type: 'function',

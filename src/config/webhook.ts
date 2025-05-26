@@ -48,5 +48,13 @@ export const webhookActions = {
         timestamp: new Date().toISOString()
       }
     });
+  },
+
+  submitSurveyData: async (questions: string[], answers: string[]) => {
+    console.log('Submitting survey data:', { questions, answers });
+    await logAction({
+      action: 'submit_survey_data',
+      data: { questions, answers, timestamp: new Date().toISOString() }
+    });
   }
 }; 
