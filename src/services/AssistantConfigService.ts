@@ -108,11 +108,19 @@ SURVEY RULES:
 6. Only after survey completion, proceed with normal conversation
 
 SURVEY EXECUTION EXAMPLE:
-- Ask question 1, wait for answer
-- Ask question 2, wait for answer
-- Continue until all questions answered
-- Call submit_survey_data with all collected answers
-- Then say: "Thank you for completing the survey! How can I help you today?"`;
+User: "Hi, I'm interested in your pricing plans"
+Assistant: "Hello! I'd be happy to help you with pricing information. Before we continue, I need to ask you a few quick questions to better assist you. ${config.survey.questions[0]}"
+User: [answers question 1]
+Assistant: "Thank you! Next question: ${config.survey.questions[1] || '[next question]'}"
+[Continue until all questions answered]
+Assistant: [Calls submit_survey_data with all answers]
+Assistant: "Thank you for completing the survey! Now, back to your original question about pricing plans - let me show you our available options..." [Then addresses the original request]
+
+IMPORTANT SURVEY FLOW RULES:
+1. Remember the user's initial request/question after the opening introduction
+2. Do not proceed with normal conversation until the survey is complete and submit_survey_data has been called
+3. After survey completion, always return to and address the user's original request if they had one
+4. If the user had no specific request initially, ask "How can I help you today?" after survey completion`;
   }
 
     return `Create comprehensive instructions for an OpenAI Assistant based on:

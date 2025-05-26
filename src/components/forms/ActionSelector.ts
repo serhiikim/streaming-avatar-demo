@@ -9,6 +9,7 @@ export interface ActionSelectorProps {
   actions: ActionConfig[];
   selectedActions?: string[];
   onChange: (selectedActions: string[]) => void;
+  onSubmitSurveyDataChange?: (enabled: boolean) => void; // New callback
 }
 
 export class ActionSelector {
@@ -16,10 +17,12 @@ export class ActionSelector {
   private actions: ActionConfig[];
   private selectedActions: Set<string> = new Set();
   private onChange: (selectedActions: string[]) => void;
+  private onSubmitSurveyDataChange?: (enabled: boolean) => void;
 
   constructor(props: ActionSelectorProps) {
     this.actions = props.actions;
     this.onChange = props.onChange;
+    this.onSubmitSurveyDataChange = props.onSubmitSurveyDataChange;
     
     if (props.selectedActions) {
       this.selectedActions = new Set(props.selectedActions);
@@ -40,7 +43,7 @@ export class ActionSelector {
     this.container.innerHTML = `
       <div class="space-y-4">
         <label class="block text-sm font-semibold text-gray-700">Available Actions</label>
-        <div class="grid md:grid-cols-3 gap-4">
+        <div class="grid md:grid-cols-2 gap-4">
           ${this.actions.map(action => this.renderActionCard(action)).join('')}
         </div>
       </div>
@@ -49,13 +52,14 @@ export class ActionSelector {
 
   private renderActionCard(action: ActionConfig): string {
     const isSelected = this.selectedActions.has(action.id);
+    const isSubmitSurvey = action.id === 'submitSurveyData';
     
     return `
       <label class="action-card flex items-start space-x-3 p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 ${
         isSelected 
           ? 'border-primary bg-blue-50' 
           : 'border-gray-200 hover:bg-gray-50 hover:border-gray-300'
-      }" data-action="${action.id}">
+      } ${isSubmitSurvey ? 'md:col-span-2' : ''}" data-action="${action.id}">
         <input 
           type="checkbox" 
           name="actions" 
@@ -63,12 +67,20 @@ export class ActionSelector {
           class="mt-1 h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
           ${isSelected ? 'checked' : ''}
         >
-        <div>
+        <div class="flex-1">
           <div class="font-medium text-gray-800 flex items-center space-x-2">
             ${action.icon ? `<span>${action.icon}</span>` : ''}
             <span>${action.title}</span>
           </div>
           <div class="text-sm text-gray-600 mt-1">${action.description}</div>
+          ${isSubmitSurvey ? `
+            <div class="text-xs text-blue-600 mt-2 flex items-center space-x-1">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span>Enabling this will show survey questions configuration below</span>
+            </div>
+          ` : ''}
         </div>
       </label>
     `;
@@ -89,6 +101,11 @@ export class ActionSelector {
         
         // Update visual state
         this.updateCardVisualState(actionId, target.checked);
+        
+        // Special handling for submitSurveyData
+        if (actionId === 'submitSurveyData' && this.onSubmitSurveyDataChange) {
+          this.onSubmitSurveyDataChange(target.checked);
+        }
         
         // Notify parent component
         this.onChange(Array.from(this.selectedActions));
@@ -112,8 +129,16 @@ export class ActionSelector {
   }
 
   setSelectedActions(actions: string[]): void {
+    const wasSubmitSurveySelected = this.selectedActions.has('submitSurveyData');
     this.selectedActions = new Set(actions);
-    // Don't re-render and re-attach listeners, just update the state
+    const isSubmitSurveySelected = this.selectedActions.has('submitSurveyData');
+    
+    // Check if submitSurveyData state changed
+    if (wasSubmitSurveySelected !== isSubmitSurveySelected && this.onSubmitSurveyDataChange) {
+      this.onSubmitSurveyDataChange(isSubmitSurveySelected);
+    }
+    
+    // Update visual state
     this.updateVisualState();
   }
   

@@ -114,7 +114,7 @@ export class SetupForm {
       onChange: () => this.validateForm()
     });
 
-    // Action Selector
+    // Action Selector with submitSurveyData callback
     this.actionSelector = new ActionSelector({
       actions: [
         {
@@ -138,25 +138,28 @@ export class SetupForm {
         {
           id: 'submitSurveyData',
           title: 'Submit Survey Data',
-          description: 'Enable survey data submission capabilities',
+          description: 'Enable mandatory survey before conversations',
           icon: '📝'
         }
       ],
-      onChange: () => this.validateForm()
+      onChange: () => this.validateForm(),
+      onSubmitSurveyDataChange: (enabled: boolean) => {
+        // 🔧 KEY: Show/hide survey section based on checkbox
+        this.surveyManager.setVisible(enabled);
+        this.validateForm();
+      }
     });
 
-    // Survey Manager
+    // Survey Manager (initially hidden)
     const initialSurveyConfig: SurveyConfig = {
       enabled: this.props.initialValues?.survey?.enabled || false,
       questions: this.props.initialValues?.survey?.questions || []
     };
 
     this.surveyManager = new SurveyManager(
-      document.createElement('div'), // Temporary container
+      document.createElement('div'),
       initialSurveyConfig,
-      (surveyConfig) => {
-        // Auto-update submitSurveyData action when survey is enabled/disabled
-        this.updateSubmitSurveyDataAction(surveyConfig);
+      () => {
         this.validateForm();
       }
     );
@@ -171,24 +174,6 @@ export class SetupForm {
     if (behaviorContainer) behaviorContainer.appendChild(this.behaviorField.getContainer());
     if (actionsContainer) actionsContainer.appendChild(this.actionSelector.getContainer());
     if (surveyContainer) surveyContainer.appendChild(this.surveyManager.getContainer());
-  }
-
-  private updateSubmitSurveyDataAction(surveyConfig: SurveyConfig): void {
-    const currentActions = this.actionSelector.getSelectedActions();
-    
-    if (surveyConfig.enabled && surveyConfig.questions.length > 0) {
-      // Auto-enable submitSurveyData when survey is enabled with questions
-      if (!currentActions.includes('submitSurveyData')) {
-        const newActions = [...currentActions, 'submitSurveyData'];
-        this.actionSelector.setSelectedActions(newActions);
-      }
-    } else {
-      // Auto-disable submitSurveyData when survey is disabled
-      if (currentActions.includes('submitSurveyData')) {
-        const newActions = currentActions.filter(action => action !== 'submitSurveyData');
-        this.actionSelector.setSelectedActions(newActions);
-      }
-    }
   }
 
   private setupEventListeners(): void {
@@ -225,6 +210,8 @@ export class SetupForm {
 
       if (survey) {
         this.surveyManager.updateConfig(survey);
+        // Set initial visibility based on survey config
+        this.surveyManager.setVisible(survey.enabled);
       }
     }
     
@@ -240,15 +227,17 @@ export class SetupForm {
     const openingIntroValue = this.openingIntroField.getValue();
     const behaviorValue = this.behaviorField.getValue();
     const surveyConfig = this.surveyManager.getConfig();
+    const selectedActions = this.actionSelector.getSelectedActions();
     
     const openingIntroValid = openingIntroValue.length >= 10;
     const behaviorValid = behaviorValue.length >= 20;
     
-    // Survey validation: if enabled, must have at least one non-empty question
+    // Survey validation: if submitSurveyData is selected, must have at least one non-empty question
     let surveyValid = true;
-    if (surveyConfig.enabled) {
-      surveyValid = surveyConfig.questions.length > 0 && 
-                   surveyConfig.questions.every(q => q.trim().length > 0);
+    if (selectedActions.includes('submitSurveyData')) {
+      const hasQuestions = surveyConfig.questions.length > 0;
+      const allQuestionsHaveContent = surveyConfig.questions.every(q => q.trim().length > 0);
+      surveyValid = hasQuestions && allQuestionsHaveContent;
     }
     
     this.isValid = openingIntroValid && behaviorValid && surveyValid;
@@ -256,7 +245,7 @@ export class SetupForm {
     
     // Update submit button text based on validation
     if (!this.isSubmitting) {
-      if (!surveyValid && surveyConfig.enabled) {
+      if (!surveyValid && selectedActions.includes('submitSurveyData')) {
         this.submitButton.innerHTML = 'Please add survey questions';
       } else if (!openingIntroValid || !behaviorValid) {
         this.submitButton.innerHTML = 'Please complete required fields';
@@ -396,6 +385,7 @@ export class SetupForm {
     this.behaviorField.setValue('');
     this.actionSelector.setSelectedActions([]);
     this.surveyManager.updateConfig({ enabled: false, questions: [] });
+    this.surveyManager.setVisible(false);
     this.validateForm();
   }
 }
