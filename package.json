@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "typescript": "~5.8.3",
-    "vite": "^6.3.5"
+    "vite": "^6.3.6"
   },
   "dependencies": {
     "@heygen/streaming-avatar": "^2.0.14",
